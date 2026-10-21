@@ -13,3 +13,11 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Node.js / Backend
+**/node_modules/
+npm-debug.log*
+*.tmp
+backend/data/*.json
+!backend/data/.gitkeep
+

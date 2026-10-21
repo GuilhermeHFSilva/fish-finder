@@ -17,8 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import com.example.fish_finder.ui.components.AppIcons
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -77,7 +76,7 @@ fun TelemetryDetailScreen(
                         .border(1.dp, AppCardBorder, RoundedCornerShape(10.dp))
                 ) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = AppIcons.ArrowBack,
                         contentDescription = "Voltar",
                         tint = AppPrimary,
                         modifier = Modifier.size(20.dp)

@@ -27,7 +27,7 @@ object AppIcons {
                 fill = null,
                 stroke = SolidColor(Color.Black),
                 strokeLineWidth = 2f,
-                strokeCap = StrokeCap.Round,
+                strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
                 // Alvo externo
@@ -68,7 +68,7 @@ object AppIcons {
                 fill = null,
                 stroke = SolidColor(Color.Black),
                 strokeLineWidth = 2f,
-                strokeCap = StrokeCap.Round,
+                strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
                 // Relógio
@@ -94,7 +94,7 @@ object AppIcons {
                 fill = null,
                 stroke = SolidColor(Color.Black),
                 strokeLineWidth = 2f,
-                strokeCap = StrokeCap.Round,
+                strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
                 // Corpo do chip
@@ -131,7 +131,7 @@ object AppIcons {
                 fill = null,
                 stroke = SolidColor(Color.Black),
                 strokeLineWidth = 2f,
-                strokeCap = StrokeCap.Round,
+                strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
                 moveTo(23f, 19f)
@@ -168,7 +168,7 @@ object AppIcons {
                 fill = null,
                 stroke = SolidColor(Color.Black),
                 strokeLineWidth = 2f,
-                strokeCap = StrokeCap.Round,
+                strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
                 // Moldura externa
@@ -214,13 +214,13 @@ object AppIcons {
                 fill = null,
                 stroke = SolidColor(Color.Black),
                 strokeLineWidth = 2f,
-                strokeCap = StrokeCap.Round,
+                strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
                 moveTo(2f, 16f)
-                cubicTo(8f, 22f, 17f, 18f, 22f, 12f)
-                cubicTo(17f, 6f, 8f, 2f, 2f, 8f)
-                cubicTo(5f, 12f, 5f, 12f, 2f, 16f)
+                curveTo(8f, 22f, 17f, 18f, 22f, 12f)
+                curveTo(17f, 6f, 8f, 2f, 2f, 8f)
+                curveTo(5f, 12f, 5f, 12f, 2f, 16f)
                 close()
                 // Olho
                 moveTo(18f, 11f); lineTo(18.01f, 11f)
@@ -241,7 +241,7 @@ object AppIcons {
                 fill = null,
                 stroke = SolidColor(Color.Black),
                 strokeLineWidth = 2f,
-                strokeCap = StrokeCap.Round,
+                strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
                 // Cantos de expansão
@@ -249,6 +249,100 @@ object AppIcons {
                 moveTo(9f, 21f); lineTo(3f, 21f); lineTo(3f, 15f)
                 moveTo(21f, 15f); lineTo(21f, 21f); lineTo(15f, 21f)
                 moveTo(3f, 9f); lineTo(3f, 3f); lineTo(9f, 3f)
+            }
+        }.build()
+    }
+
+    // Ícone de Fechar / X
+    val Close: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "Close",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(
+                fill = null,
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(18f, 6f); lineTo(6f, 18f)
+                moveTo(6f, 6f); lineTo(18f, 18f)
+            }
+        }.build()
+    }
+
+    // Ícone de Busca
+    val Search: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "Search",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(
+                fill = null,
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(11f, 4f)
+                arcTo(7f, 7f, 0f, isMoreThanHalf = true, isPositiveArc = true, 11f, 18f)
+                arcTo(7f, 7f, 0f, isMoreThanHalf = true, isPositiveArc = true, 11f, 4f)
+                moveTo(21f, 21f); lineTo(16.65f, 16.65f)
+            }
+        }.build()
+    }
+
+    // Ícone de Voltar / Flecha esquerda
+    val ArrowBack: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "ArrowBack",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(
+                fill = null,
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(19f, 12f); lineTo(5f, 12f)
+                moveTo(12f, 19f); lineTo(5f, 12f); lineTo(12f, 5f)
+            }
+        }.build()
+    }
+
+    // Ícone de Atualizar / Recarregar
+    val Refresh: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "Refresh",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(
+                fill = null,
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(23f, 4f); lineTo(23f, 10f); lineTo(17f, 10f)
+                moveTo(1f, 20f); lineTo(1f, 14f); lineTo(7f, 14f)
+                moveTo(3.51f, 9f)
+                arcTo(9f, 9f, 0f, isMoreThanHalf = false, isPositiveArc = true, 20.49f, 7.2f)
+                moveTo(20.49f, 15f)
+                arcTo(9f, 9f, 0f, isMoreThanHalf = false, isPositiveArc = true, 3.51f, 16.8f)
             }
         }.build()
     }
