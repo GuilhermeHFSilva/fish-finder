@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,9 +27,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.fish_finder.presentation.viewmodel.InferenceUiState
-import com.example.fish_finder.ui.components.GlobalStatsBanner
-import com.example.fish_finder.ui.components.HistorySessionCard
+import com.example.fish_finder.presentation.state.InferenceUiState
+import com.example.fish_finder.ui.components.cards.GlobalStatsBanner
+import com.example.fish_finder.ui.components.cards.HistorySessionCard
 import com.example.fish_finder.ui.theme.AppCardBorder
 import com.example.fish_finder.ui.theme.AppPrimary
 import com.example.fish_finder.ui.theme.AppSurface
@@ -39,6 +38,9 @@ import com.example.fish_finder.ui.theme.TextMuted
 import com.example.fish_finder.ui.theme.TextPrimary
 import com.example.fish_finder.ui.theme.TextSecondary
 
+/**
+ * Tela 3: Histórico de Inferências passadas com pesquisa e auditoria de sincronização (RF8).
+ */
 @Composable
 fun HistoryScreen(
     state: InferenceUiState,
@@ -51,9 +53,7 @@ fun HistoryScreen(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // -----------------------------------------------------------------
-        // 1. HEADER
-        // -----------------------------------------------------------------
+        // 1. Cabeçalho
         item {
             Column {
                 Text(
@@ -72,9 +72,7 @@ fun HistoryScreen(
             }
         }
 
-        // -----------------------------------------------------------------
-        // 2. BANNER DE ESTATÍSTICAS GLOBAIS (Card Azul em destaque)
-        // -----------------------------------------------------------------
+        // 2. Banner de Estatísticas Globais
         item {
             GlobalStatsBanner(
                 totalInferences = state.totalInferences,
@@ -83,9 +81,7 @@ fun HistoryScreen(
             )
         }
 
-        // -----------------------------------------------------------------
-        // 3. BARRA DE BUSCA EM TEMPO REAL
-        // -----------------------------------------------------------------
+        // 3. Barra de Busca em Tempo Real
         item {
             OutlinedTextField(
                 value = state.searchQuery,
@@ -129,9 +125,7 @@ fun HistoryScreen(
             )
         }
 
-        // -----------------------------------------------------------------
-        // 4. TÍTULO DA SEÇÃO CRONOLÓGICA
-        // -----------------------------------------------------------------
+        // 4. Cabeçalho da Lista Cronológica
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -152,9 +146,7 @@ fun HistoryScreen(
             }
         }
 
-        // -----------------------------------------------------------------
-        // 5. ITENS CRONOLÓGICOS (LazyColumn)
-        // -----------------------------------------------------------------
+        // 5. Itens do Histórico
         if (state.filteredHistory.isEmpty()) {
             item {
                 Column(

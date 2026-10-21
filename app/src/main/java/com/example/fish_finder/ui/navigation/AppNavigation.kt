@@ -16,12 +16,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.fish_finder.presentation.viewmodel.InferenceUiState
+import com.example.fish_finder.presentation.state.InferenceUiAction
+import com.example.fish_finder.presentation.state.InferenceUiState
 import com.example.fish_finder.ui.components.AppIcons
 import com.example.fish_finder.ui.screens.DetectionScreen
 import com.example.fish_finder.ui.screens.HistoryScreen
@@ -30,17 +30,46 @@ import com.example.fish_finder.ui.theme.AppBackground
 import com.example.fish_finder.ui.theme.AppPrimary
 import com.example.fish_finder.ui.theme.AppPrimaryLight
 import com.example.fish_finder.ui.theme.AppSurface
-import com.example.fish_finder.ui.theme.TextPrimary
 import com.example.fish_finder.ui.theme.TextSecondary
 
 /**
- * Destinos da NavigationBar principal.
+ * Destinos da barra de navegação inferior (Bottom Navigation).
  */
 enum class AppDestination(val label: String, val icon: ImageVector) {
     DETECT("Detectar", AppIcons.Detect),
     HISTORY("Histórico", AppIcons.History)
 }
 
+/**
+ * Ponto de entrada de navegação reativo com despacho unificado de ações (UDF / MVI).
+ */
+@Composable
+fun AppNavigation(
+    state: InferenceUiState,
+    onAction: (InferenceUiAction) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AppNavigation(
+        state = state,
+        onModelSelected = { onAction(InferenceUiAction.SelectModel(it)) },
+        onCustomLabelsChanged = { onAction(InferenceUiAction.ChangeCustomLabels(it)) },
+        onConfidenceThresholdChanged = { onAction(InferenceUiAction.ChangeConfidenceThreshold(it)) },
+        onTakePhoto = { onAction(InferenceUiAction.TakePhoto) },
+        onSelectGallery = { onAction(InferenceUiAction.SelectGallery) },
+        onExecuteInference = { onAction(InferenceUiAction.ExecuteInference) },
+        onNewInference = { onAction(InferenceUiAction.NewInference) },
+        onSearchQueryChanged = { onAction(InferenceUiAction.SearchQuery(it)) },
+        onSelectSessionForDetail = { onAction(InferenceUiAction.SelectSessionDetail(it)) },
+        onClearSelectedSession = { onAction(InferenceUiAction.ClearSelectedSession) },
+        onToggleExportInfoDialog = { onAction(InferenceUiAction.ToggleExportInfoDialog(it)) },
+        onToggleZoomDialog = { onAction(InferenceUiAction.ToggleZoomDialog(it)) },
+        modifier = modifier
+    )
+}
+
+/**
+ * Sobrecarga detalhada com callbacks individuais para máxima flexibilidade e compatibilidade.
+ */
 @Composable
 fun AppNavigation(
     state: InferenceUiState,
@@ -60,7 +89,7 @@ fun AppNavigation(
 ) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.DETECT) }
 
-    // Intercepta botão voltar nativo do Android se estiver na Tela 4
+    // Intercepta botão voltar do dispositivo se estiver no detalhe geométrico (Tela 4)
     if (currentDestination == AppDestination.HISTORY && state.selectedSessionForDetail != null) {
         BackHandler {
             onClearSelectedSession()
@@ -82,7 +111,6 @@ fun AppNavigation(
                         selected = isSelected,
                         onClick = {
                             if (destination == AppDestination.HISTORY && currentDestination == AppDestination.HISTORY) {
-                                // Se já estiver no histórico e tocar novamente, volta para a lista principal
                                 onClearSelectedSession()
                             }
                             currentDestination = destination
@@ -133,14 +161,12 @@ fun AppNavigation(
             AppDestination.HISTORY -> {
                 val detailSession = state.selectedSessionForDetail
                 if (detailSession != null) {
-                    // TELA 4: Detalhamento Geométrico das Caixas
                     TelemetryDetailScreen(
                         session = detailSession,
                         onBack = onClearSelectedSession,
                         modifier = Modifier.padding(innerPadding)
                     )
                 } else {
-                    // TELA 3: Histórico de Inferências
                     HistoryScreen(
                         state = state,
                         onSearchQueryChanged = onSearchQueryChanged,

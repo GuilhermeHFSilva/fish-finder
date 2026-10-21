@@ -9,11 +9,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.fish_finder.presentation.viewmodel.InferenceUiState
+import com.example.fish_finder.presentation.state.InferenceUiState
 import com.example.fish_finder.presentation.viewmodel.InferenceViewModel
 import com.example.fish_finder.ui.navigation.AppNavigation
 import com.example.fish_finder.ui.theme.Fish_finderTheme
 
+/**
+ * Atividade principal do FishFinder configurada com Jetpack Compose e Edge-to-Edge.
+ */
 class MainActivity : ComponentActivity() {
 
     private val viewModel: InferenceViewModel by viewModels()
@@ -27,18 +30,7 @@ class MainActivity : ComponentActivity() {
 
                 AppNavigation(
                     state = state,
-                    onModelSelected = viewModel::onModelSelected,
-                    onCustomLabelsChanged = viewModel::onCustomLabelsChanged,
-                    onConfidenceThresholdChanged = viewModel::onConfidenceThresholdChanged,
-                    onTakePhoto = viewModel::onTakePhotoClicked,
-                    onSelectGallery = viewModel::onSelectGalleryClicked,
-                    onExecuteInference = viewModel::onExecuteInference,
-                    onNewInference = viewModel::onNewInferenceClicked,
-                    onSearchQueryChanged = viewModel::onSearchQueryChanged,
-                    onSelectSessionForDetail = viewModel::onSelectSessionForDetail,
-                    onClearSelectedSession = viewModel::onClearSelectedSession,
-                    onToggleExportInfoDialog = viewModel::onToggleExportInfoDialog,
-                    onToggleZoomDialog = viewModel::onToggleZoomDialog
+                    onAction = viewModel::onAction
                 )
             }
         }
@@ -51,18 +43,7 @@ fun AppPreview() {
     Fish_finderTheme(darkTheme = false) {
         AppNavigation(
             state = InferenceUiState(),
-            onModelSelected = {},
-            onCustomLabelsChanged = {},
-            onConfidenceThresholdChanged = {},
-            onTakePhoto = {},
-            onSelectGallery = {},
-            onExecuteInference = {},
-            onNewInference = {},
-            onSearchQueryChanged = {},
-            onSelectSessionForDetail = {},
-            onClearSelectedSession = {},
-            onToggleExportInfoDialog = {},
-            onToggleZoomDialog = {}
+            onAction = {}
         )
     }
 }

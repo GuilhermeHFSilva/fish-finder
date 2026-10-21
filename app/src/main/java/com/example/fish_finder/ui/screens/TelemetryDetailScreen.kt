@@ -1,9 +1,9 @@
 package com.example.fish_finder.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -36,10 +36,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fish_finder.domain.model.InferenceResult
-import com.example.fish_finder.ui.components.BoundingBoxTelemetryCard
+import com.example.fish_finder.ui.components.cards.BoundingBoxTelemetryCard
 import com.example.fish_finder.ui.theme.AppCardBorder
 import com.example.fish_finder.ui.theme.AppPrimary
-import com.example.fish_finder.ui.theme.AppPrimaryLight
 import com.example.fish_finder.ui.theme.AppSecondary
 import com.example.fish_finder.ui.theme.AppSurface
 import com.example.fish_finder.ui.theme.AppSurfaceVariant
@@ -48,6 +47,10 @@ import com.example.fish_finder.ui.theme.TextMuted
 import com.example.fish_finder.ui.theme.TextPrimary
 import com.example.fish_finder.ui.theme.TextSecondary
 
+/**
+ * Tela 4: Detalhamento Geométrico das Caixas Delimitadoras (RF5 / RF8).
+ * Realiza a auditoria individual de coordenadas, largura, altura, centróide e área.
+ */
 @Composable
 fun TelemetryDetailScreen(
     session: InferenceResult,
@@ -59,9 +62,7 @@ fun TelemetryDetailScreen(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // -----------------------------------------------------------------
-        // 1. TOP BAR CUSTOMIZADA COM BOTÃO VOLTAR ESTILIZADO
-        // -----------------------------------------------------------------
+        // 1. Barra superior de navegação com botão voltar
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -100,15 +101,13 @@ fun TelemetryDetailScreen(
             }
         }
 
-        // -----------------------------------------------------------------
-        // 2. CARD DE RESUMO DA SESSÃO (GRID 2x2)
-        // -----------------------------------------------------------------
+        // 2. Card de Resumo de Telemetria da Sessão (Grid 2x2)
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = AppSurface),
-                border = androidx.compose.foundation.BorderStroke(1.dp, AppCardBorder),
+                border = BorderStroke(1.dp, AppCardBorder),
                 elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
             ) {
                 Column(
@@ -117,7 +116,6 @@ fun TelemetryDetailScreen(
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // Linha 1: MODELO | TOTAL CAIXAS
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -137,7 +135,6 @@ fun TelemetryDetailScreen(
                         )
                     }
 
-                    // Linha 2: TEMPO INFERÊNCIA | PERSISTÊNCIA
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -160,9 +157,7 @@ fun TelemetryDetailScreen(
             }
         }
 
-        // -----------------------------------------------------------------
-        // 3. CABEÇALHO DA LISTA DE TELEMETRIA
-        // -----------------------------------------------------------------
+        // 3. Cabeçalho da Lista de Caixas
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -184,9 +179,7 @@ fun TelemetryDetailScreen(
             }
         }
 
-        // -----------------------------------------------------------------
-        // 4. LISTA DE CAIXAS DELIMITADORAS COM MÉTRICAS GEOMÉTRICAS PRECISAS
-        // -----------------------------------------------------------------
+        // 4. Lista de Cartões de Auditoria Geométrica
         if (session.boundingBoxes.isEmpty()) {
             item {
                 Column(
