@@ -13,6 +13,7 @@ import com.example.fish_finder.data.storage.CollectionStore
 import com.example.fish_finder.domain.game.FishingRules
 import com.example.fish_finder.domain.model.BoundingBox
 import com.example.fish_finder.domain.model.Net
+import com.example.fish_finder.presentation.state.DetectionOverview
 import com.example.fish_finder.presentation.state.Encounter
 import com.example.fish_finder.presentation.state.FishingUiAction
 import com.example.fish_finder.presentation.state.FishingUiState
@@ -30,7 +31,7 @@ import java.util.UUID
 import kotlin.math.max
 import kotlin.random.Random
 
-/** Orquestra o ciclo do jogo: foto → detecção → encontro → captura → aquário. */
+/** Orquestra o ciclo do jogo: foto → detecção → visão geral das boxes → encontro → captura → aquário. */
 class FishingViewModel(app: Application) : AndroidViewModel(app) {
 
     private val detectorDelegate = lazy { FishDetector(app) }
@@ -55,32 +56,53 @@ class FishingViewModel(app: Application) : AndroidViewModel(app) {
             FishingUiAction.NextEncounter -> _uiState.update {
                 it.copy(encounters = it.encounters.drop(1), result = null, isThrowing = false)
             }
+            FishingUiAction.StartEncounters -> _uiState.update {
+                it.copy(detectionOverview = null)
+            }
+            FishingUiAction.DismissDetectionOverview -> _uiState.update {
+                it.copy(detectionOverview = null, encounters = emptyList(), summary = null)
+            }
         }
     }
+
+    private data class InternalScanResult(
+        val summary: ScanSummary,
+        val boxes: List<BoundingBox>,
+        val encounters: List<Encounter>,
+        val bitmap: Bitmap
+    )
 
     private fun scan(uri: Uri) {
         if (_uiState.value.isScanning) return
         viewModelScope.launch {
-            _uiState.update { it.copy(isScanning = true, message = null, summary = null) }
+            _uiState.update {
+                it.copy(isScanning = true, message = null, summary = null, detectionOverview = null)
+            }
             val scan = withContext(Dispatchers.Default) {
                 runCatching {
                     val bitmap = decode(uri) ?: return@runCatching null
                     val boxes = detector.detect(bitmap)
                     val summary = ScanSummary(boxes.size, boxes.map { it.confidence }.average().toFloat())
-                    summary to boxes.take(MAX_ENCOUNTERS)
-                        .map { Encounter(crop(bitmap, it), it.confidence, FishingRules.rollRarity(rng)) }
+                    val encounters = boxes.take(MAX_ENCOUNTERS)
+                        .map { Encounter(crop(bitmap, it), it.confidence, FishingRules.rollRarity(rng), it.boxId) }
+                    InternalScanResult(summary, boxes, encounters, bitmap)
                 }.getOrNull()
             }
-            val encounters = scan?.second
+            val encounters = scan?.encounters
+            val boxes = scan?.boxes.orEmpty()
+            val bitmap = scan?.bitmap
             _uiState.update {
                 it.copy(
                     isScanning = false,
                     encounters = encounters.orEmpty(),
-                    summary = scan?.first?.takeIf { s -> s.totalFound > 0 },
+                    summary = scan?.summary?.takeIf { s -> s.totalFound > 0 },
+                    detectionOverview = if (bitmap != null && boxes.isNotEmpty()) {
+                        DetectionOverview(image = bitmap, boxes = boxes)
+                    } else null,
                     result = null,
                     message = when {
-                        encounters == null -> "Não foi possível abrir ou analisar a imagem."
-                        encounters.isEmpty() -> "Nenhum peixe encontrado. Tente outra imagem."
+                        scan == null -> "Não foi possível abrir ou analisar a imagem."
+                        boxes.isEmpty() -> "Nenhum peixe encontrado. Tente outra imagem."
                         else -> null
                     }
                 )

@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.example.fish_finder.presentation.state.FishingUiAction
 import com.example.fish_finder.presentation.state.FishingUiState
 import com.example.fish_finder.ui.screens.fishing.AquariumScreen
+import com.example.fish_finder.ui.screens.fishing.DetectionOverviewScreen
 import com.example.fish_finder.ui.screens.fishing.EncounterScreen
 import com.example.fish_finder.ui.screens.fishing.FishingScreen
 import com.example.fish_finder.ui.theme.AppBackground
@@ -49,6 +50,18 @@ fun AppNavigation(
     modifier: Modifier = Modifier
 ) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.FISH) }
+
+    // Imagem completa com as boxes detectadas pela IA antes de iniciar a pescaria individual
+    state.detectionOverview?.let { overview ->
+        DetectionOverviewScreen(
+            overview = overview,
+            summary = state.summary,
+            onStartEncounters = { onAction(FishingUiAction.StartEncounters) },
+            onDismiss = { onAction(FishingUiAction.DismissDetectionOverview) },
+            modifier = modifier
+        )
+        return
+    }
 
     // Peixe detectado: tela cheia, sem barra de navegação, até capturar ou deixar para lá
     state.currentEncounter?.let { encounter ->

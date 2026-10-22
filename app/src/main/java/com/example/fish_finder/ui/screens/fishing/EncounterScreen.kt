@@ -105,7 +105,7 @@ fun EncounterScreen(
                 color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.ExtraBold
             )
             Text(
-                if (remaining > 1) "Mais ${remaining - 1} na fila" else "Último da foto",
+                if (remaining > 1) "Peixe #${encounter.boxId} · Mais ${remaining - 1} na fila" else "Peixe #${encounter.boxId} · Último da foto",
                 color = Color.White.copy(alpha = 0.75f), fontSize = 12.sp
             )
             summary?.let {
