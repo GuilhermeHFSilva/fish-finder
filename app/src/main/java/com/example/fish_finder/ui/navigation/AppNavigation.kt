@@ -56,6 +56,7 @@ fun AppNavigation(
         onConfidenceThresholdChanged = { onAction(InferenceUiAction.ChangeConfidenceThreshold(it)) },
         onTakePhoto = { onAction(InferenceUiAction.TakePhoto) },
         onSelectGallery = { onAction(InferenceUiAction.SelectGallery) },
+        onImageSelected = { onAction(InferenceUiAction.ImageSelected(it)) },
         onExecuteInference = { onAction(InferenceUiAction.ExecuteInference) },
         onNewInference = { onAction(InferenceUiAction.NewInference) },
         onSearchQueryChanged = { onAction(InferenceUiAction.SearchQuery(it)) },
@@ -63,6 +64,7 @@ fun AppNavigation(
         onClearSelectedSession = { onAction(InferenceUiAction.ClearSelectedSession) },
         onToggleExportInfoDialog = { onAction(InferenceUiAction.ToggleExportInfoDialog(it)) },
         onToggleZoomDialog = { onAction(InferenceUiAction.ToggleZoomDialog(it)) },
+        onToggleDarkMode = { onAction(InferenceUiAction.ToggleDarkModeSwitch) },
         modifier = modifier
     )
 }
@@ -76,15 +78,17 @@ fun AppNavigation(
     onModelSelected: (String) -> Unit,
     onCustomLabelsChanged: (String) -> Unit,
     onConfidenceThresholdChanged: (Float) -> Unit,
-    onTakePhoto: () -> Unit,
-    onSelectGallery: () -> Unit,
-    onExecuteInference: () -> Unit,
-    onNewInference: () -> Unit,
-    onSearchQueryChanged: (String) -> Unit,
-    onSelectSessionForDetail: (String) -> Unit,
-    onClearSelectedSession: () -> Unit,
-    onToggleExportInfoDialog: (Boolean) -> Unit,
-    onToggleZoomDialog: (Boolean) -> Unit,
+    onTakePhoto: () -> Unit = {},
+    onSelectGallery: () -> Unit = {},
+    onImageSelected: (String) -> Unit = {},
+    onExecuteInference: () -> Unit = {},
+    onNewInference: () -> Unit = {},
+    onSearchQueryChanged: (String) -> Unit = {},
+    onSelectSessionForDetail: (String) -> Unit = {},
+    onClearSelectedSession: () -> Unit = {},
+    onToggleExportInfoDialog: (Boolean) -> Unit = {},
+    onToggleZoomDialog: (Boolean) -> Unit = {},
+    onToggleDarkMode: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.DETECT) }
@@ -150,10 +154,12 @@ fun AppNavigation(
                     onConfidenceThresholdChanged = onConfidenceThresholdChanged,
                     onTakePhoto = onTakePhoto,
                     onSelectGallery = onSelectGallery,
+                    onImageSelected = onImageSelected,
                     onExecuteInference = onExecuteInference,
                     onNewInference = onNewInference,
                     onToggleExportInfoDialog = onToggleExportInfoDialog,
                     onToggleZoomDialog = onToggleZoomDialog,
+                    onToggleDarkMode = onToggleDarkMode,
                     modifier = Modifier.padding(innerPadding)
                 )
             }
@@ -171,6 +177,7 @@ fun AppNavigation(
                         state = state,
                         onSearchQueryChanged = onSearchQueryChanged,
                         onSelectSession = onSelectSessionForDetail,
+                        onToggleDarkMode = onToggleDarkMode,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }

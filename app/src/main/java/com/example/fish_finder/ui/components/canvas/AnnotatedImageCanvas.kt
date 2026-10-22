@@ -18,19 +18,24 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fish_finder.domain.model.InferenceResult
@@ -39,6 +44,7 @@ import com.example.fish_finder.ui.theme.BoundingBoxColor1
 import com.example.fish_finder.ui.theme.BoundingBoxColor2
 import com.example.fish_finder.ui.theme.BoundingBoxColor3
 import com.example.fish_finder.ui.theme.BoundingBoxColor4
+import com.example.fish_finder.ui.utils.ImageUtils
 
 private val BOX_PALETTE = listOf(
     BoundingBoxColor1,
@@ -49,7 +55,7 @@ private val BOX_PALETTE = listOf(
 
 /**
  * Canvas customizado para sobreposição gráfica e renderização vetorizada
- * de caixas delimitadoras e centróides sobre o frame de captura (Tela 2 / RF5).
+ * de caixas delimitadoras e centróides sobre a imagem real de captura (Tela 2 / RF5).
  */
 @Composable
 fun AnnotatedImageCanvas(
@@ -57,14 +63,23 @@ fun AnnotatedImageCanvas(
     modifier: Modifier = Modifier,
     onImageClick: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     val textMeasurer = rememberTextMeasurer()
+
+    val bitmap = remember(result.imageUri) {
+        if (!result.imageUri.isNullOrBlank()) {
+            ImageUtils.loadBitmapFromUri(context, result.imageUri)
+        } else {
+            null
+        }
+    }
 
     Card(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onImageClick),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)), // Simula água profunda de tanque escavado
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         BoxWithConstraints(
@@ -76,10 +91,35 @@ fun AnnotatedImageCanvas(
             val canvasHeight = constraints.maxHeight.toFloat()
 
             Canvas(modifier = Modifier.fillMaxSize()) {
-                drawRect(color = Color(0xFF0B192C))
+                if (bitmap != null) {
+                    val srcSize = IntSize(bitmap.width, bitmap.height)
+                    val dstSize = IntSize(size.width.toInt(), size.height.toInt())
+                    drawImage(
+                        image = bitmap.asImageBitmap(),
+                        srcOffset = IntOffset.Zero,
+                        srcSize = srcSize,
+                        dstOffset = IntOffset.Zero,
+                        dstSize = dstSize
+                    )
+                } else {
+                    drawRect(color = Color(0xFF0B192C))
+                }
 
-                val imgW = if (result.imageWidthPx > 0) result.imageWidthPx.toFloat() else 1920f
-                val imgH = if (result.imageHeightPx > 0) result.imageHeightPx.toFloat() else 1080f
+                val imgW = if (bitmap != null) {
+                    bitmap.width.toFloat()
+                } else if (result.imageWidthPx > 0) {
+                    result.imageWidthPx.toFloat()
+                } else {
+                    1920f
+                }
+
+                val imgH = if (bitmap != null) {
+                    bitmap.height.toFloat()
+                } else if (result.imageHeightPx > 0) {
+                    result.imageHeightPx.toFloat()
+                } else {
+                    1080f
+                }
 
                 val scaleX = canvasWidth / imgW
                 val scaleY = canvasHeight / imgH

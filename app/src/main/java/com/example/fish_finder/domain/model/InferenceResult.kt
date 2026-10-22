@@ -13,6 +13,7 @@ package com.example.fish_finder.domain.model
  * @property imageHeightPx Altura nativa da imagem processada.
  * @property syncStatus Estado de persistência e sincronização com o backend.
  * @property boundingBoxes Lista de caixas delimitadoras calculadas.
+ * @property imageUri URI local ou de arquivo da imagem associada.
  */
 data class InferenceResult(
     val sessionId: String,
@@ -24,7 +25,8 @@ data class InferenceResult(
     val imageWidthPx: Int,
     val imageHeightPx: Int,
     val syncStatus: SyncStatus = SyncStatus.SYNCED,
-    val boundingBoxes: List<BoundingBox> = emptyList()
+    val boundingBoxes: List<BoundingBox> = emptyList(),
+    val imageUri: String? = null
 ) {
     /**
      * Construtor de compatibilidade para código que passa [isSyncedWithServer] como booleano.
@@ -39,7 +41,8 @@ data class InferenceResult(
         imageWidthPx: Int,
         imageHeightPx: Int,
         isSyncedWithServer: Boolean,
-        boundingBoxes: List<BoundingBox>
+        boundingBoxes: List<BoundingBox>,
+        imageUri: String? = null
     ) : this(
         sessionId = sessionId,
         timestamp = timestamp,
@@ -50,7 +53,8 @@ data class InferenceResult(
         imageWidthPx = imageWidthPx,
         imageHeightPx = imageHeightPx,
         syncStatus = if (isSyncedWithServer) SyncStatus.SYNCED else SyncStatus.PENDING,
-        boundingBoxes = boundingBoxes
+        boundingBoxes = boundingBoxes,
+        imageUri = imageUri
     )
 
     /**

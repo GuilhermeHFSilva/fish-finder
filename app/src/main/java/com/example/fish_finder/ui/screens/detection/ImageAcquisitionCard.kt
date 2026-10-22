@@ -48,6 +48,7 @@ import com.example.fish_finder.ui.theme.TextSecondary
 fun ImageAcquisitionCard(
     confidenceThreshold: Float,
     isInferring: Boolean,
+    isImageSelected: Boolean = false,
     onTakePhoto: () -> Unit,
     onSelectGallery: () -> Unit,
     onConfidenceThresholdChanged: (Float) -> Unit,
@@ -155,7 +156,7 @@ fun ImageAcquisitionCard(
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = AppPrimary,
-                    disabledContainerColor = AppPrimary.copy(alpha = 0.6f)
+                    disabledContainerColor = AppPrimary.copy(alpha = 0.5f)
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -183,7 +184,7 @@ fun ImageAcquisitionCard(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "▶ Executar inferência",
+                        text = if (isImageSelected) "▶ Executar inferência" else "▶ Executar inferência",
                         color = Color.White,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold

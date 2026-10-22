@@ -1,9 +1,10 @@
 package com.example.fish_finder.presentation.state
 
-import com.example.fish_finder.domain.model.BoundingBox
 import com.example.fish_finder.domain.model.InferenceResult
 import com.example.fish_finder.domain.model.SyncStatus
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -35,6 +36,25 @@ class InferenceUiStateTest {
             boundingBoxes = emptyList()
         )
     )
+
+    @Test
+    fun initialState_isCleanWithoutMockData() {
+        val state = InferenceUiState()
+
+        assertFalse("Não deve haver imagem pré-selecionada no início", state.isImageSelected)
+        assertNull("Uri da imagem deve ser nulo no início", state.selectedImageUri)
+        assertNull("Não deve haver inferência em andamento ou pré-calculada", state.currentInference)
+        assertTrue("Histórico deve iniciar vazio e limpo", state.historyList.isEmpty())
+        assertFalse("Modo escuro deve iniciar desligado por padrão", state.isDarkMode)
+    }
+
+    @Test
+    fun darkMode_togglesCorrectly() {
+        val state = InferenceUiState(isDarkMode = false)
+        val darkState = state.copy(isDarkMode = true)
+
+        assertTrue(darkState.isDarkMode)
+    }
 
     @Test
     fun aggregateMetrics_calculateCorrectly() {

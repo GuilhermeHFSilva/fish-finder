@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fish_finder.domain.model.InferenceResult
+import com.example.fish_finder.ui.components.canvas.AnnotatedImageCanvas
 import com.example.fish_finder.ui.components.cards.BoundingBoxTelemetryCard
 import com.example.fish_finder.ui.theme.AppCardBorder
 import com.example.fish_finder.ui.theme.AppPrimary
@@ -153,6 +154,13 @@ fun TelemetryDetailScreen(
                         )
                     }
                 }
+            }
+        }
+
+        // 2.5 Visualização Gráfica Anotada
+        if (session.boundingBoxes.isNotEmpty() || !session.imageUri.isNullOrBlank()) {
+            item {
+                AnnotatedImageCanvas(result = session)
             }
         }
 

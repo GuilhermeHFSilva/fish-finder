@@ -33,6 +33,7 @@ object InferenceMapper {
 
         json.put("total_objetos", result.totalObjects)
         json.put("limiar_confianca_utilizado", confidenceThreshold.toDouble())
+        result.imageUri?.let { json.put("uri_imagem", it) }
 
         val boxesArray = JSONArray()
         result.boundingBoxes.forEach { box ->
@@ -118,6 +119,10 @@ object InferenceMapper {
             0.0f
         }
 
+        val imageUri = if (json.has("uri_imagem") && !json.isNull("uri_imagem")) {
+            json.getString("uri_imagem").takeIf { it.isNotBlank() }
+        } else null
+
         return InferenceResult(
             sessionId = sessionId,
             timestamp = formattedTimestamp,
@@ -128,7 +133,8 @@ object InferenceMapper {
             imageWidthPx = imageWidth,
             imageHeightPx = imageHeight,
             syncStatus = SyncStatus.SYNCED,
-            boundingBoxes = boxes
+            boundingBoxes = boxes,
+            imageUri = imageUri
         )
     }
 

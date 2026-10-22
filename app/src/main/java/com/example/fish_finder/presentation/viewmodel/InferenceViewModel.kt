@@ -1,7 +1,10 @@
 package com.example.fish_finder.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import android.content.Context
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fish_finder.data.local.LocalInferenceStorage
 import com.example.fish_finder.data.repository.InferenceRepositoryImpl
 import com.example.fish_finder.domain.repository.InferenceRepository
 import com.example.fish_finder.presentation.state.InferenceUiAction
@@ -14,12 +17,28 @@ import kotlinx.coroutines.launch
 
 /**
  * ViewModel que gerencia a inferência on-device e orquestra o estado da UI (MVVM Clean Architecture).
+ * Inicia com histórico limpo, persiste execuções locais e gerencia preferências de tema (Modo Escuro).
  */
 class InferenceViewModel(
-    private val repository: InferenceRepository = InferenceRepositoryImpl()
-) : ViewModel() {
+    application: Application,
+    private val repository: InferenceRepository
+) : AndroidViewModel(application) {
 
-    private val _uiState = MutableStateFlow(InferenceUiState())
+    // Construtor padrão utilizado pela factory de ViewModel do Android
+    constructor(application: Application) : this(
+        application = application,
+        repository = InferenceRepositoryImpl(
+            localStorage = LocalInferenceStorage(application.applicationContext)
+        )
+    )
+
+    private val prefs = application.getSharedPreferences("fish_finder_preferences", Context.MODE_PRIVATE)
+
+    private val _uiState = MutableStateFlow(
+        InferenceUiState(
+            isDarkMode = prefs.getBoolean("key_dark_mode", false)
+        )
+    )
     val uiState: StateFlow<InferenceUiState> = _uiState.asStateFlow()
 
     init {
@@ -32,7 +51,7 @@ class InferenceViewModel(
             _uiState.update { state ->
                 state.copy(
                     historyList = history,
-                    currentInference = history.firstOrNull()
+                    currentInference = null // Garante início limpo (sem inferência pré-carregada)
                 )
             }
         }
@@ -55,30 +74,43 @@ class InferenceViewModel(
                 _uiState.update { it.copy(confidenceThreshold = action.threshold) }
             }
 
-            is InferenceUiAction.TakePhoto -> {
+            is InferenceUiAction.ImageSelected -> {
                 _uiState.update {
                     it.copy(
                         isImageSelected = true,
-                        selectedImageUri = "mock://camera/tilapia_tank_capture_${System.currentTimeMillis()}.jpg"
+                        selectedImageUri = action.uri,
+                        statusMessage = null
                     )
                 }
+            }
+
+            is InferenceUiAction.TakePhoto -> {
+                // Abertura nativa da câmera é orquestrada pela View
             }
 
             is InferenceUiAction.SelectGallery -> {
-                _uiState.update {
-                    it.copy(
-                        isImageSelected = true,
-                        selectedImageUri = "mock://gallery/tanque_escavado_piscicultura.png"
-                    )
-                }
+                // Seleção da galeria é orquestrada pela View
             }
 
             is InferenceUiAction.ExecuteInference -> {
-                executeInferenceFlow()
+                if (!_uiState.value.isImageSelected || _uiState.value.selectedImageUri.isNullOrBlank()) {
+                    _uiState.update {
+                        it.copy(statusMessage = "Por favor, tire uma foto ou selecione uma imagem da galeria antes de executar.")
+                    }
+                } else {
+                    executeInferenceFlow()
+                }
             }
 
             is InferenceUiAction.NewInference -> {
-                _uiState.update { it.copy(currentInference = null) }
+                _uiState.update {
+                    it.copy(
+                        currentInference = null,
+                        isImageSelected = false,
+                        selectedImageUri = null,
+                        statusMessage = null
+                    )
+                }
             }
 
             is InferenceUiAction.SearchQuery -> {
@@ -101,6 +133,21 @@ class InferenceViewModel(
             is InferenceUiAction.ToggleZoomDialog -> {
                 _uiState.update { it.copy(isZoomDialogOpen = action.isOpen) }
             }
+
+            is InferenceUiAction.ToggleDarkMode -> {
+                prefs.edit().putBoolean("key_dark_mode", action.isDark).apply()
+                _uiState.update { it.copy(isDarkMode = action.isDark) }
+            }
+
+            is InferenceUiAction.ToggleDarkModeSwitch -> {
+                val newDark = !_uiState.value.isDarkMode
+                prefs.edit().putBoolean("key_dark_mode", newDark).apply()
+                _uiState.update { it.copy(isDarkMode = newDark) }
+            }
+
+            is InferenceUiAction.ClearStatusMessage -> {
+                _uiState.update { it.copy(statusMessage = null) }
+            }
         }
     }
 
@@ -108,7 +155,7 @@ class InferenceViewModel(
         if (_uiState.value.isInferring) return
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isInferring = true) }
+            _uiState.update { it.copy(isInferring = true, statusMessage = null) }
 
             val currentState = _uiState.value
             val result = repository.executeInference(
@@ -129,7 +176,7 @@ class InferenceViewModel(
     }
 
     // -------------------------------------------------------------------------
-    // Métodos de conveniência diretos para manter compatibilidade com Callbacks
+    // Métodos de conveniência diretos
     // -------------------------------------------------------------------------
 
     fun onModelSelected(modelName: String) = onAction(InferenceUiAction.SelectModel(modelName))
@@ -137,6 +184,8 @@ class InferenceViewModel(
     fun onCustomLabelsChanged(labels: String) = onAction(InferenceUiAction.ChangeCustomLabels(labels))
 
     fun onConfidenceThresholdChanged(threshold: Float) = onAction(InferenceUiAction.ChangeConfidenceThreshold(threshold))
+
+    fun onImageSelected(uri: String) = onAction(InferenceUiAction.ImageSelected(uri))
 
     fun onTakePhotoClicked() = onAction(InferenceUiAction.TakePhoto)
 
@@ -155,4 +204,6 @@ class InferenceViewModel(
     fun onToggleExportInfoDialog(isOpen: Boolean) = onAction(InferenceUiAction.ToggleExportInfoDialog(isOpen))
 
     fun onToggleZoomDialog(isOpen: Boolean) = onAction(InferenceUiAction.ToggleZoomDialog(isOpen))
+
+    fun onToggleDarkMode() = onAction(InferenceUiAction.ToggleDarkModeSwitch)
 }

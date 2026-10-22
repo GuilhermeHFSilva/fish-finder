@@ -15,7 +15,7 @@ import com.example.fish_finder.ui.navigation.AppNavigation
 import com.example.fish_finder.ui.theme.Fish_finderTheme
 
 /**
- * Atividade principal do FishFinder configurada com Jetpack Compose e Edge-to-Edge.
+ * Atividade principal do FishFinder configurada com Jetpack Compose e suporte a Modo Escuro.
  */
 class MainActivity : ComponentActivity() {
 
@@ -25,9 +25,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            Fish_finderTheme(darkTheme = false) {
-                val state by viewModel.uiState.collectAsState()
+            val state by viewModel.uiState.collectAsState()
 
+            Fish_finderTheme(darkTheme = state.isDarkMode) {
                 AppNavigation(
                     state = state,
                     onAction = viewModel::onAction

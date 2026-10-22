@@ -9,6 +9,7 @@ sealed interface InferenceUiAction {
     data class ChangeConfidenceThreshold(val threshold: Float) : InferenceUiAction
     data object TakePhoto : InferenceUiAction
     data object SelectGallery : InferenceUiAction
+    data class ImageSelected(val uri: String) : InferenceUiAction
     data object ExecuteInference : InferenceUiAction
     data object NewInference : InferenceUiAction
     data class SearchQuery(val query: String) : InferenceUiAction
@@ -16,4 +17,7 @@ sealed interface InferenceUiAction {
     data object ClearSelectedSession : InferenceUiAction
     data class ToggleExportInfoDialog(val isOpen: Boolean) : InferenceUiAction
     data class ToggleZoomDialog(val isOpen: Boolean) : InferenceUiAction
+    data class ToggleDarkMode(val isDark: Boolean) : InferenceUiAction
+    data object ToggleDarkModeSwitch : InferenceUiAction
+    data object ClearStatusMessage : InferenceUiAction
 }

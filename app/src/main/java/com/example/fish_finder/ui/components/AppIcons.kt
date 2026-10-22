@@ -346,4 +346,62 @@ object AppIcons {
             }
         }.build()
     }
+
+    // Ícone de Modo Escuro / Lua
+    val DarkMode: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "DarkMode",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(
+                fill = null,
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(21f, 12.79f)
+                arcTo(9f, 9f, 0f, isMoreThanHalf = true, isPositiveArc = true, 11.21f, 3f)
+                arcTo(7f, 7f, 0f, isMoreThanHalf = false, isPositiveArc = false, 21f, 12.79f)
+                close()
+            }
+        }.build()
+    }
+
+    // Ícone de Modo Claro / Sol
+    val LightMode: ImageVector by lazy {
+        ImageVector.Builder(
+            name = "LightMode",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(
+                fill = null,
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                // Círculo central
+                moveTo(16f, 12f)
+                arcTo(4f, 4f, 0f, isMoreThanHalf = true, isPositiveArc = true, 8f, 12f)
+                arcTo(4f, 4f, 0f, isMoreThanHalf = true, isPositiveArc = true, 16f, 12f)
+                // Raios do sol
+                moveTo(12f, 1f); lineTo(12f, 3f)
+                moveTo(12f, 21f); lineTo(12f, 23f)
+                moveTo(4.22f, 4.22f); lineTo(5.64f, 5.64f)
+                moveTo(18.36f, 18.36f); lineTo(19.78f, 19.78f)
+                moveTo(1f, 12f); lineTo(3f, 12f)
+                moveTo(21f, 12f); lineTo(23f, 12f)
+                moveTo(4.22f, 19.78f); lineTo(5.64f, 18.36f)
+                moveTo(18.36f, 5.64f); lineTo(19.78f, 4.22f)
+            }
+        }.build()
+    }
 }
+
