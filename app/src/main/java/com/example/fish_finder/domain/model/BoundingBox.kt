@@ -33,11 +33,6 @@ data class BoundingBox(
         get() = widthPx * heightPx
 
     /**
-     * Método de compatibilidade para cálculo de área em pixels quadrados.
-     */
-    fun getAreaPx(): Float = areaPx
-
-    /**
      * Formatação amigável das dimensões para exibição e auditoria.
      */
     val formattedDimensions: String

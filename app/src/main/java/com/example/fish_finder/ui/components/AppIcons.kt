@@ -27,7 +27,7 @@ object AppIcons {
                 fill = null,
                 stroke = SolidColor(Color.Black),
                 strokeLineWidth = 2f,
-                strokeCap = StrokeCap.Round,
+                strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
                 // Alvo externo
@@ -68,7 +68,7 @@ object AppIcons {
                 fill = null,
                 stroke = SolidColor(Color.Black),
                 strokeLineWidth = 2f,
-                strokeCap = StrokeCap.Round,
+                strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
                 // Relógio
@@ -94,7 +94,7 @@ object AppIcons {
                 fill = null,
                 stroke = SolidColor(Color.Black),
                 strokeLineWidth = 2f,
-                strokeCap = StrokeCap.Round,
+                strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
                 // Corpo do chip
@@ -131,7 +131,7 @@ object AppIcons {
                 fill = null,
                 stroke = SolidColor(Color.Black),
                 strokeLineWidth = 2f,
-                strokeCap = StrokeCap.Round,
+                strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
                 moveTo(23f, 19f)
@@ -168,7 +168,7 @@ object AppIcons {
                 fill = null,
                 stroke = SolidColor(Color.Black),
                 strokeLineWidth = 2f,
-                strokeCap = StrokeCap.Round,
+                strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
                 // Moldura externa
@@ -214,13 +214,13 @@ object AppIcons {
                 fill = null,
                 stroke = SolidColor(Color.Black),
                 strokeLineWidth = 2f,
-                strokeCap = StrokeCap.Round,
+                strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
                 moveTo(2f, 16f)
-                cubicTo(8f, 22f, 17f, 18f, 22f, 12f)
-                cubicTo(17f, 6f, 8f, 2f, 2f, 8f)
-                cubicTo(5f, 12f, 5f, 12f, 2f, 16f)
+                curveTo(8f, 22f, 17f, 18f, 22f, 12f)
+                curveTo(17f, 6f, 8f, 2f, 2f, 8f)
+                curveTo(5f, 12f, 5f, 12f, 2f, 16f)
                 close()
                 // Olho
                 moveTo(18f, 11f); lineTo(18.01f, 11f)
@@ -241,7 +241,7 @@ object AppIcons {
                 fill = null,
                 stroke = SolidColor(Color.Black),
                 strokeLineWidth = 2f,
-                strokeCap = StrokeCap.Round,
+                strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
                 // Cantos de expansão

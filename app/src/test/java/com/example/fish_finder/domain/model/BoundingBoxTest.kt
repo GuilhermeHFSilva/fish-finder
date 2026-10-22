@@ -34,7 +34,6 @@ class BoundingBoxTest {
         )
 
         assertEquals(20000f, box.areaPx, 0.001f)
-        assertEquals(20000f, box.getAreaPx(), 0.001f)
     }
 
     @Test
