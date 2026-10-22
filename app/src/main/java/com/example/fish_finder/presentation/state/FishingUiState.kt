@@ -9,6 +9,11 @@ import com.example.fish_finder.domain.model.Rarity
 /** Peixe detectado, recortado da foto e pronto para ser capturado. */
 class Encounter(val crop: Bitmap, val confidence: Float, val rarity: Rarity)
 
+/** Resultado da varredura de uma foto: todos os peixes detectados, não só os da fila. */
+data class ScanSummary(val totalFound: Int, val averageConfidence: Float) {
+    val formattedConfidence: String get() = "${(averageConfidence * 100).toInt()}%"
+}
+
 sealed interface ThrowResult {
     data object Missed : ThrowResult
     data object Fled : ThrowResult
@@ -18,6 +23,7 @@ sealed interface ThrowResult {
 data class FishingUiState(
     val isScanning: Boolean = false,
     val message: String? = null,
+    val summary: ScanSummary? = null,
     val encounters: List<Encounter> = emptyList(),
     val isThrowing: Boolean = false,
     val result: ThrowResult? = null,

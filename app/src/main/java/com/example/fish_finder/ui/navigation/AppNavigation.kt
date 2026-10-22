@@ -1,6 +1,6 @@
 package com.example.fish_finder.ui.navigation
 
-import androidx.activity.compose.BackHandler
+import android.net.Uri
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,15 +23,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import android.net.Uri
 import com.example.fish_finder.presentation.state.FishingUiAction
 import com.example.fish_finder.presentation.state.FishingUiState
-import com.example.fish_finder.presentation.state.InferenceUiAction
-import com.example.fish_finder.presentation.state.InferenceUiState
-import com.example.fish_finder.ui.components.AppIcons
-import com.example.fish_finder.ui.screens.DetectionScreen
-import com.example.fish_finder.ui.screens.HistoryScreen
-import com.example.fish_finder.ui.screens.TelemetryDetailScreen
 import com.example.fish_finder.ui.screens.fishing.AquariumScreen
 import com.example.fish_finder.ui.screens.fishing.EncounterScreen
 import com.example.fish_finder.ui.screens.fishing.FishingScreen
@@ -46,85 +39,30 @@ import com.example.fish_finder.ui.theme.TextSecondary
  */
 enum class AppDestination(val label: String, val icon: ImageVector) {
     FISH("Pescar", Icons.Default.Search),
-    AQUARIUM("Aquário", Icons.Default.Star),
-    DETECT("Detectar", AppIcons.Detect),
-    HISTORY("Histórico", AppIcons.History)
+    AQUARIUM("Aquário", Icons.Default.Star)
 }
 
-/**
- * Ponto de entrada de navegação reativo com despacho unificado de ações (UDF / MVI).
- */
 @Composable
 fun AppNavigation(
-    state: InferenceUiState,
-    onAction: (InferenceUiAction) -> Unit,
-    modifier: Modifier = Modifier,
-    fishing: FishingUiState = FishingUiState(),
-    onFishingAction: (FishingUiAction) -> Unit = {}
-) {
-    AppNavigation(
-        state = state,
-        fishing = fishing,
-        onFishingAction = onFishingAction,
-        onModelSelected = { onAction(InferenceUiAction.SelectModel(it)) },
-        onCustomLabelsChanged = { onAction(InferenceUiAction.ChangeCustomLabels(it)) },
-        onConfidenceThresholdChanged = { onAction(InferenceUiAction.ChangeConfidenceThreshold(it)) },
-        onTakePhoto = { onAction(InferenceUiAction.TakePhoto) },
-        onSelectGallery = { onAction(InferenceUiAction.SelectGallery) },
-        onExecuteInference = { onAction(InferenceUiAction.ExecuteInference) },
-        onNewInference = { onAction(InferenceUiAction.NewInference) },
-        onSearchQueryChanged = { onAction(InferenceUiAction.SearchQuery(it)) },
-        onSelectSessionForDetail = { onAction(InferenceUiAction.SelectSessionDetail(it)) },
-        onClearSelectedSession = { onAction(InferenceUiAction.ClearSelectedSession) },
-        onToggleExportInfoDialog = { onAction(InferenceUiAction.ToggleExportInfoDialog(it)) },
-        onToggleZoomDialog = { onAction(InferenceUiAction.ToggleZoomDialog(it)) },
-        modifier = modifier
-    )
-}
-
-/**
- * Sobrecarga detalhada com callbacks individuais para máxima flexibilidade e compatibilidade.
- */
-@Composable
-fun AppNavigation(
-    state: InferenceUiState,
-    onModelSelected: (String) -> Unit,
-    onCustomLabelsChanged: (String) -> Unit,
-    onConfidenceThresholdChanged: (Float) -> Unit,
-    onTakePhoto: () -> Unit,
-    onSelectGallery: () -> Unit,
-    onExecuteInference: () -> Unit,
-    onNewInference: () -> Unit,
-    onSearchQueryChanged: (String) -> Unit,
-    onSelectSessionForDetail: (String) -> Unit,
-    onClearSelectedSession: () -> Unit,
-    onToggleExportInfoDialog: (Boolean) -> Unit,
-    onToggleZoomDialog: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-    fishing: FishingUiState = FishingUiState(),
-    onFishingAction: (FishingUiAction) -> Unit = {}
+    state: FishingUiState,
+    onAction: (FishingUiAction) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.FISH) }
 
     // Peixe detectado: tela cheia, sem barra de navegação, até capturar ou deixar para lá
-    fishing.currentEncounter?.let { encounter ->
+    state.currentEncounter?.let { encounter ->
         EncounterScreen(
             encounter = encounter,
-            remaining = fishing.encounters.size,
-            isThrowing = fishing.isThrowing,
-            result = fishing.result,
-            onThrow = { onFishingAction(FishingUiAction.ThrowNet(it)) },
-            onNext = { onFishingAction(FishingUiAction.NextEncounter) },
+            remaining = state.encounters.size,
+            summary = state.summary,
+            isThrowing = state.isThrowing,
+            result = state.result,
+            onThrow = { onAction(FishingUiAction.ThrowNet(it)) },
+            onNext = { onAction(FishingUiAction.NextEncounter) },
             modifier = modifier
         )
         return
-    }
-
-    // Intercepta botão voltar do dispositivo se estiver no detalhe geométrico (Tela 4)
-    if (currentDestination == AppDestination.HISTORY && state.selectedSessionForDetail != null) {
-        BackHandler {
-            onClearSelectedSession()
-        }
     }
 
     Scaffold(
@@ -140,12 +78,7 @@ fun AppNavigation(
 
                     NavigationBarItem(
                         selected = isSelected,
-                        onClick = {
-                            if (destination == AppDestination.HISTORY && currentDestination == AppDestination.HISTORY) {
-                                onClearSelectedSession()
-                            }
-                            currentDestination = destination
-                        },
+                        onClick = { currentDestination = destination },
                         icon = {
                             Icon(
                                 imageVector = destination.icon,
@@ -174,49 +107,15 @@ fun AppNavigation(
     ) { innerPadding ->
         when (currentDestination) {
             AppDestination.FISH -> FishingScreen(
-                state = fishing,
-                onImage = { onFishingAction(FishingUiAction.ImagePicked(it)) },
+                state = state,
+                onImage = { uri: Uri -> onAction(FishingUiAction.ImagePicked(uri)) },
                 modifier = Modifier.padding(innerPadding)
             )
 
             AppDestination.AQUARIUM -> AquariumScreen(
-                collection = fishing.collection,
+                collection = state.collection,
                 modifier = Modifier.padding(innerPadding)
             )
-
-            AppDestination.DETECT -> {
-                DetectionScreen(
-                    state = state,
-                    onModelSelected = onModelSelected,
-                    onCustomLabelsChanged = onCustomLabelsChanged,
-                    onConfidenceThresholdChanged = onConfidenceThresholdChanged,
-                    onTakePhoto = onTakePhoto,
-                    onSelectGallery = onSelectGallery,
-                    onExecuteInference = onExecuteInference,
-                    onNewInference = onNewInference,
-                    onToggleExportInfoDialog = onToggleExportInfoDialog,
-                    onToggleZoomDialog = onToggleZoomDialog,
-                    modifier = Modifier.padding(innerPadding)
-                )
-            }
-
-            AppDestination.HISTORY -> {
-                val detailSession = state.selectedSessionForDetail
-                if (detailSession != null) {
-                    TelemetryDetailScreen(
-                        session = detailSession,
-                        onBack = onClearSelectedSession,
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                } else {
-                    HistoryScreen(
-                        state = state,
-                        onSearchQueryChanged = onSearchQueryChanged,
-                        onSelectSession = onSelectSessionForDetail,
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
         }
     }
 }

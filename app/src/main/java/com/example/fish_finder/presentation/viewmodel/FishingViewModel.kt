@@ -16,6 +16,7 @@ import com.example.fish_finder.domain.model.Net
 import com.example.fish_finder.presentation.state.Encounter
 import com.example.fish_finder.presentation.state.FishingUiAction
 import com.example.fish_finder.presentation.state.FishingUiState
+import com.example.fish_finder.presentation.state.ScanSummary
 import com.example.fish_finder.presentation.state.ThrowResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -60,19 +61,22 @@ class FishingViewModel(app: Application) : AndroidViewModel(app) {
     private fun scan(uri: Uri) {
         if (_uiState.value.isScanning) return
         viewModelScope.launch {
-            _uiState.update { it.copy(isScanning = true, message = null) }
-            val encounters = withContext(Dispatchers.Default) {
+            _uiState.update { it.copy(isScanning = true, message = null, summary = null) }
+            val scan = withContext(Dispatchers.Default) {
                 runCatching {
                     val bitmap = decode(uri) ?: return@runCatching null
-                    detector.detect(bitmap)
-                        .take(MAX_ENCOUNTERS)
+                    val boxes = detector.detect(bitmap)
+                    val summary = ScanSummary(boxes.size, boxes.map { it.confidence }.average().toFloat())
+                    summary to boxes.take(MAX_ENCOUNTERS)
                         .map { Encounter(crop(bitmap, it), it.confidence, FishingRules.rollRarity(rng)) }
                 }.getOrNull()
             }
+            val encounters = scan?.second
             _uiState.update {
                 it.copy(
                     isScanning = false,
                     encounters = encounters.orEmpty(),
+                    summary = scan?.first?.takeIf { s -> s.totalFound > 0 },
                     result = null,
                     message = when {
                         encounters == null -> "Não foi possível abrir ou analisar a imagem."

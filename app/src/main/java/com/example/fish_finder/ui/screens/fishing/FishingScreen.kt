@@ -98,6 +98,13 @@ fun FishingScreen(
                 ) { Text("Escolher da galeria", fontWeight = FontWeight.Bold, fontSize = 16.sp) }
             }
 
+            state.summary?.let {
+                Text(
+                    "${it.totalFound} peixes encontrados no tanque · confiança média ${it.formattedConfidence}",
+                    color = GoldAccent, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 20.dp)
+                )
+            }
             state.message?.let {
                 Text(it, color = Color.White, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 20.dp))
             }

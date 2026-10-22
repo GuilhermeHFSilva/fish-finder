@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import com.example.fish_finder.domain.game.FishingRules
 import com.example.fish_finder.domain.model.Net
 import com.example.fish_finder.presentation.state.Encounter
+import com.example.fish_finder.presentation.state.ScanSummary
 import com.example.fish_finder.presentation.state.ThrowResult
 import com.example.fish_finder.ui.components.fishing.NetIcon
 import com.example.fish_finder.ui.components.fishing.OceanBackground
@@ -64,6 +65,7 @@ import com.example.fish_finder.ui.theme.OceanDeep
 fun EncounterScreen(
     encounter: Encounter,
     remaining: Int,
+    summary: ScanSummary?,
     isThrowing: Boolean,
     result: ThrowResult?,
     onThrow: (Net) -> Unit,
@@ -106,6 +108,12 @@ fun EncounterScreen(
                 if (remaining > 1) "Mais ${remaining - 1} na fila" else "Último da foto",
                 color = Color.White.copy(alpha = 0.75f), fontSize = 12.sp
             )
+            summary?.let {
+                Text(
+                    "${it.totalFound} no tanque · confiança média ${it.formattedConfidence}",
+                    color = GoldAccent, fontSize = 12.sp, fontWeight = FontWeight.Bold
+                )
+            }
             RarityChip(encounter.rarity, Modifier.padding(top = 8.dp))
 
             Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
