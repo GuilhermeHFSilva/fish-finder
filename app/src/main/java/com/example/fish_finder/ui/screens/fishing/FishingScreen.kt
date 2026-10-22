@@ -16,7 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -88,14 +87,14 @@ fun FishingScreen(
                     modifier = Modifier.fillMaxWidth().height(54.dp)
                 ) { Text("Usar a câmera", fontWeight = FontWeight.Bold, fontSize = 16.sp) }
 
-                OutlinedButton(
+                Button(
                     onClick = {
                         gallery.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                     },
                     shape = RoundedCornerShape(50),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = OceanDeep),
                     modifier = Modifier.fillMaxWidth().height(54.dp).padding(top = 10.dp)
-                ) { Text("Escolher da galeria", fontWeight = FontWeight.Bold, fontSize = 16.sp) }
+                ) { Text("Escolher da galeria", color = OceanDeep, fontWeight = FontWeight.Bold, fontSize = 16.sp) }
             }
 
             state.summary?.let {
