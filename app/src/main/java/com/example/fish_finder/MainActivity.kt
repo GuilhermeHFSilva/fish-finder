@@ -10,6 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.fish_finder.presentation.state.InferenceUiState
+import com.example.fish_finder.presentation.viewmodel.FishingViewModel
 import com.example.fish_finder.presentation.viewmodel.InferenceViewModel
 import com.example.fish_finder.ui.navigation.AppNavigation
 import com.example.fish_finder.ui.theme.Fish_finderTheme
@@ -20,6 +21,7 @@ import com.example.fish_finder.ui.theme.Fish_finderTheme
 class MainActivity : ComponentActivity() {
 
     private val viewModel: InferenceViewModel by viewModels()
+    private val fishingViewModel: FishingViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,10 +29,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             Fish_finderTheme(darkTheme = false) {
                 val state by viewModel.uiState.collectAsState()
+                val fishing by fishingViewModel.uiState.collectAsState()
 
                 AppNavigation(
                     state = state,
-                    onAction = viewModel::onAction
+                    onAction = viewModel::onAction,
+                    fishing = fishing,
+                    onFishingAction = fishingViewModel::onAction
                 )
             }
         }

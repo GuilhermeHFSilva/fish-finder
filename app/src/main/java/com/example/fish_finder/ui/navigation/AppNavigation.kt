@@ -4,6 +4,9 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -20,12 +23,18 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.net.Uri
+import com.example.fish_finder.presentation.state.FishingUiAction
+import com.example.fish_finder.presentation.state.FishingUiState
 import com.example.fish_finder.presentation.state.InferenceUiAction
 import com.example.fish_finder.presentation.state.InferenceUiState
 import com.example.fish_finder.ui.components.AppIcons
 import com.example.fish_finder.ui.screens.DetectionScreen
 import com.example.fish_finder.ui.screens.HistoryScreen
 import com.example.fish_finder.ui.screens.TelemetryDetailScreen
+import com.example.fish_finder.ui.screens.fishing.AquariumScreen
+import com.example.fish_finder.ui.screens.fishing.EncounterScreen
+import com.example.fish_finder.ui.screens.fishing.FishingScreen
 import com.example.fish_finder.ui.theme.AppBackground
 import com.example.fish_finder.ui.theme.AppPrimary
 import com.example.fish_finder.ui.theme.AppPrimaryLight
@@ -36,6 +45,8 @@ import com.example.fish_finder.ui.theme.TextSecondary
  * Destinos da barra de navegação inferior (Bottom Navigation).
  */
 enum class AppDestination(val label: String, val icon: ImageVector) {
+    FISH("Pescar", Icons.Default.Search),
+    AQUARIUM("Aquário", Icons.Default.Star),
     DETECT("Detectar", AppIcons.Detect),
     HISTORY("Histórico", AppIcons.History)
 }
@@ -47,10 +58,14 @@ enum class AppDestination(val label: String, val icon: ImageVector) {
 fun AppNavigation(
     state: InferenceUiState,
     onAction: (InferenceUiAction) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    fishing: FishingUiState = FishingUiState(),
+    onFishingAction: (FishingUiAction) -> Unit = {}
 ) {
     AppNavigation(
         state = state,
+        fishing = fishing,
+        onFishingAction = onFishingAction,
         onModelSelected = { onAction(InferenceUiAction.SelectModel(it)) },
         onCustomLabelsChanged = { onAction(InferenceUiAction.ChangeCustomLabels(it)) },
         onConfidenceThresholdChanged = { onAction(InferenceUiAction.ChangeConfidenceThreshold(it)) },
@@ -85,9 +100,25 @@ fun AppNavigation(
     onClearSelectedSession: () -> Unit,
     onToggleExportInfoDialog: (Boolean) -> Unit,
     onToggleZoomDialog: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    fishing: FishingUiState = FishingUiState(),
+    onFishingAction: (FishingUiAction) -> Unit = {}
 ) {
-    var currentDestination by rememberSaveable { mutableStateOf(AppDestination.DETECT) }
+    var currentDestination by rememberSaveable { mutableStateOf(AppDestination.FISH) }
+
+    // Peixe detectado: tela cheia, sem barra de navegação, até capturar ou deixar para lá
+    fishing.currentEncounter?.let { encounter ->
+        EncounterScreen(
+            encounter = encounter,
+            remaining = fishing.encounters.size,
+            isThrowing = fishing.isThrowing,
+            result = fishing.result,
+            onThrow = { onFishingAction(FishingUiAction.ThrowNet(it)) },
+            onNext = { onFishingAction(FishingUiAction.NextEncounter) },
+            modifier = modifier
+        )
+        return
+    }
 
     // Intercepta botão voltar do dispositivo se estiver no detalhe geométrico (Tela 4)
     if (currentDestination == AppDestination.HISTORY && state.selectedSessionForDetail != null) {
@@ -142,6 +173,17 @@ fun AppNavigation(
         }
     ) { innerPadding ->
         when (currentDestination) {
+            AppDestination.FISH -> FishingScreen(
+                state = fishing,
+                onImage = { onFishingAction(FishingUiAction.ImagePicked(it)) },
+                modifier = Modifier.padding(innerPadding)
+            )
+
+            AppDestination.AQUARIUM -> AquariumScreen(
+                collection = fishing.collection,
+                modifier = Modifier.padding(innerPadding)
+            )
+
             AppDestination.DETECT -> {
                 DetectionScreen(
                     state = state,

@@ -30,3 +30,15 @@ val BoundingBoxColor1 = Color(0xFF0288D1) // Azul
 val BoundingBoxColor2 = Color(0xFF00897B) // Verde-água
 val BoundingBoxColor3 = Color(0xFFFF6D00) // Laranja vibrante
 val BoundingBoxColor4 = Color(0xFF7C4DFF) // Roxo destaque
+
+// Paleta "oceano" das telas de pesca e do aquário
+val OceanDeep = Color(0xFF04304D)
+val OceanMid = Color(0xFF0B6E99)
+val OceanLight = Color(0xFF31B6C9)
+val Foam = Color(0xFFE8FBFF)
+val GoldAccent = Color(0xFFFFC53D)
+
+val RarityCommon = Color(0xFF8FA3B5)
+val RarityUncommon = Color(0xFF3DDC97)
+val RarityRare = Color(0xFF5B8DEF)
+val RarityLegendary = Color(0xFFFFB020)
